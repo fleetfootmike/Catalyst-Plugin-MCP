@@ -1,0 +1,5 @@
+Revision history for Catalyst-Plugin-MCP
+
+0.001     unreleased
+          - Initial version: Model Context Protocol (2025-06-18) server plugin
+            for Catalyst, layered on Catalyst::Plugin::JSONRPC::Server.
