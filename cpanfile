@@ -1,6 +1,6 @@
 requires 'perl', '5.036';
 requires 'Moo';
-requires 'Try::Tiny';
+requires 'Moo::Role';
 requires 'namespace::clean';
 requires 'Scalar::Util';
 requires 'Catalyst::Plugin::JSONRPC::Server';
@@ -11,4 +11,6 @@ on test => sub {
     requires 'Test::Fatal';
     requires 'HTTP::Request::Common';
     requires 'JSON::MaybeXS';
+    requires 'Moose';
+    requires 'namespace::autoclean';
 };

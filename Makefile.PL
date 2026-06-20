@@ -10,7 +10,7 @@ WriteMakefile(
     MIN_PERL_VERSION => '5.036',
     PREREQ_PM => {
         'Moo'                              => 0,
-        'Try::Tiny'                        => 0,
+        'Moo::Role'                        => 0,
         'namespace::clean'                 => 0,
         'Scalar::Util'                     => 0,
         'Catalyst::Plugin::JSONRPC::Server' => 0,
@@ -21,6 +21,8 @@ WriteMakefile(
         'Test::Fatal'           => 0,
         'HTTP::Request::Common' => 0,
         'JSON::MaybeXS'         => 0,
+        'Moose'                 => 0,
+        'namespace::autoclean'  => 0,
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },

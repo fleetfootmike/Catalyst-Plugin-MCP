@@ -1,0 +1,19 @@
+Changes
+cpanfile
+lib/Catalyst/Plugin/MCP.pm
+lib/Catalyst/Plugin/MCP/Role/PromptProvider.pm
+lib/Catalyst/Plugin/MCP/Role/ResourceProvider.pm
+lib/Catalyst/Plugin/MCP/Role/ToolProvider.pm
+lib/Catalyst/Plugin/MCP/Server.pm
+Makefile.PL
+MANIFEST			This list of files
+README.md
+t/00-load.t
+t/catalyst-app.t
+t/lib/TestApp.pm
+t/lib/TestApp/Controller/Root.pm
+t/lib/TestProviders.pm
+t/plugin-context.t
+t/roles.t
+t/server-lifecycle.t
+t/server-verbs.t
