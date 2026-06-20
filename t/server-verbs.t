@@ -110,4 +110,16 @@ is( exception { $h->{'tools/call'}->( { name => 'ghost' } ) }->{code},
 is( exception { $h->{'tools/call'}->( {} ) }->{code}, -32602,
     'tools/call without name is -32602' );
 
+# S1: tools/call with non-hash arguments -> -32602
+is( exception { $h->{'tools/call'}->( { name => 'echo', arguments => 'bad' } ) }->{code},
+    -32602, 'tools/call with string arguments is -32602' );
+is( exception { $h->{'tools/call'}->( { name => 'echo', arguments => [1,2,3] } ) }->{code},
+    -32602, 'tools/call with arrayref arguments is -32602' );
+
+# S1: prompts/get with non-hash arguments -> -32602
+is( exception { $h->{'prompts/get'}->( { name => 'p', arguments => 'bad' } ) }->{code},
+    -32602, 'prompts/get with string arguments is -32602' );
+is( exception { $h->{'prompts/get'}->( { name => 'p', arguments => [1,2,3] } ) }->{code},
+    -32602, 'prompts/get with arrayref arguments is -32602' );
+
 done_testing;

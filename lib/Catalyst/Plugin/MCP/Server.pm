@@ -18,6 +18,11 @@ has server_info => (
 
 has _providers => ( is => 'ro', default => sub { {} } );
 
+sub BUILD ( $self, $args ) {
+    die "protocol_versions must be a non-empty arrayref\n"
+        unless @{ $self->protocol_versions };
+}
+
 my %ROLE_FOR_KIND = (
     resources => 'Catalyst::Plugin::MCP::Role::ResourceProvider',
     prompts   => 'Catalyst::Plugin::MCP::Role::PromptProvider',
@@ -29,6 +34,8 @@ sub register_provider ( $self, $obj ) {
     my $matched = 0;
     for my $kind ( sort keys %ROLE_FOR_KIND ) {
         next unless $obj->DOES( $ROLE_FOR_KIND{$kind} );
+        die "MCP provider of kind '$kind' already registered\n"
+            if $self->_providers->{$kind};
         $self->_providers->{$kind} = $obj;
         $matched++;
     }
@@ -116,7 +123,10 @@ sub _prompts_get ( $self, $params ) {
     my $name = ref $params eq 'HASH' ? $params->{name} : undef;
     die { code => -32602, message => 'Invalid params: name is required' }
         unless defined $name && length $name;
-    my $args = ( ref $params eq 'HASH' ? $params->{arguments} : undef ) // {};
+    my $raw_args = ref $params eq 'HASH' ? $params->{arguments} : undef;
+    die { code => -32602, message => 'Invalid params: arguments must be an object' }
+        if defined $raw_args && ref $raw_args ne 'HASH';
+    my $args = $raw_args // {};
     my $out = $self->_providers->{prompts}->get( $name, $args );
     die { code => -32602, message => 'Unknown prompt', data => { name => $name } }
         unless defined $out;
@@ -131,7 +141,10 @@ sub _tools_call ( $self, $params ) {
     my $name = ref $params eq 'HASH' ? $params->{name} : undef;
     die { code => -32602, message => 'Invalid params: name is required' }
         unless defined $name && length $name;
-    my $args = ( ref $params eq 'HASH' ? $params->{arguments} : undef ) // {};
+    my $raw_args = ref $params eq 'HASH' ? $params->{arguments} : undef;
+    die { code => -32602, message => 'Invalid params: arguments must be an object' }
+        if defined $raw_args && ref $raw_args ne 'HASH';
+    my $args = $raw_args // {};
 
     # Protocol error if the tool is not advertised. The unpaginated list must
     # enumerate every tool (see the ToolProvider POD).

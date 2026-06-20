@@ -61,4 +61,16 @@ is( $h->{initialize}->( { protocolVersion => '1999-01-01' } )->{protocolVersion}
 # ping -> empty object
 is_deeply( $h->{ping}->( {} ), {}, 'ping returns {}' );
 
+# S3: empty protocol_versions dies at construction
+ok( exception { Catalyst::Plugin::MCP::Server->new( protocol_versions => [] ) },
+    'empty protocol_versions dies at construction' );
+
+# S4: registering two providers of the same kind dies
+{
+    my $dup = Catalyst::Plugin::MCP::Server->new;
+    $dup->register_provider( StubTools->new );
+    like( exception { $dup->register_provider( StubTools->new ) },
+        qr/already registered/, 'duplicate same-kind provider dies with already registered' );
+}
+
 done_testing;
