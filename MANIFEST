@@ -1,3 +1,4 @@
+.perlcriticrc
 Changes
 cpanfile
 lib/Catalyst/Plugin/MCP.pm
@@ -13,7 +14,9 @@ t/catalyst-app.t
 t/lib/TestApp.pm
 t/lib/TestApp/Controller/Root.pm
 t/lib/TestProviders.pm
+t/perl_critic.t
 t/plugin-context.t
+t/plugin-isolation.t
 t/roles.t
 t/server-lifecycle.t
 t/server-verbs.t

@@ -14,3 +14,9 @@ on test => sub {
     requires 'Moose';
     requires 'namespace::autoclean';
 };
+
+# Author-only: t/perl_critic.t self-skips unless PERL_CRITIC_TEST is set and
+# Test::Perl::Critic is installed, so it is a develop dep, not a test requirement.
+on develop => sub {
+    requires 'Test::Perl::Critic';
+};
