@@ -86,4 +86,62 @@ sub handlers ( $self ) {
     return \%h;
 }
 
+sub _cursor ( $self, $params ) {
+    return ref $params eq 'HASH' ? $params->{cursor} : undef;
+}
+
+sub _resources_list ( $self, $params ) {
+    return $self->_providers->{resources}->list( $self->_cursor($params) );
+}
+
+sub _resources_templates ( $self, $params ) {
+    return $self->_providers->{resources}->templates;
+}
+
+sub _resources_read ( $self, $params ) {
+    my $uri = ref $params eq 'HASH' ? $params->{uri} : undef;
+    die { code => -32602, message => 'Invalid params: uri is required' }
+        unless defined $uri && length $uri;
+    my $out = $self->_providers->{resources}->read($uri);
+    die { code => -32002, message => 'Resource not found', data => { uri => $uri } }
+        unless defined $out;
+    return $out;
+}
+
+sub _prompts_list ( $self, $params ) {
+    return $self->_providers->{prompts}->list( $self->_cursor($params) );
+}
+
+sub _prompts_get ( $self, $params ) {
+    my $name = ref $params eq 'HASH' ? $params->{name} : undef;
+    die { code => -32602, message => 'Invalid params: name is required' }
+        unless defined $name && length $name;
+    my $args = ( ref $params eq 'HASH' ? $params->{arguments} : undef ) // {};
+    my $out = $self->_providers->{prompts}->get( $name, $args );
+    die { code => -32602, message => 'Unknown prompt', data => { name => $name } }
+        unless defined $out;
+    return $out;
+}
+
+sub _tools_list ( $self, $params ) {
+    return $self->_providers->{tools}->list( $self->_cursor($params) );
+}
+
+sub _tools_call ( $self, $params ) {
+    my $name = ref $params eq 'HASH' ? $params->{name} : undef;
+    die { code => -32602, message => 'Invalid params: name is required' }
+        unless defined $name && length $name;
+    my $args = ( ref $params eq 'HASH' ? $params->{arguments} : undef ) // {};
+
+    # Protocol error if the tool is not advertised. The unpaginated list must
+    # enumerate every tool (see the ToolProvider POD).
+    my $list  = $self->_providers->{tools}->list(undef);
+    my @names = map { $_->{name} } @{ $list->{tools} // [] };
+    die { code => -32602, message => 'Unknown tool', data => { name => $name } }
+        unless grep { defined $_ && $_ eq $name } @names;
+
+    # Execution failures are normal results carrying isError, not exceptions.
+    return $self->_providers->{tools}->call( $name, $args );
+}
+
 1;
