@@ -40,6 +40,34 @@ sub mcp_dispatch ( $c, $body = undef ) {
 
 Catalyst::Plugin::MCP - Model Context Protocol server plugin for Catalyst
 
+=head1 SYNOPSIS
+
+    package MyApp;
+    use Catalyst qw/
+        +Catalyst::Plugin::JSONRPC::Server
+        +Catalyst::Plugin::MCP
+    /;
+    __PACKAGE__->setup;
+
+    # in a controller action mounted at your MCP endpoint
+    sub mcp :Path('/mcp') :Args(0) {
+        my ( $self, $c ) = @_;
+        $c->mcp_register_provider( $c->model('MCP::Resources') );
+        $c->mcp_register_provider( $c->model('MCP::Tools') );
+        $c->mcp_dispatch;
+    }
+
+=head1 REQUIRED PLUGINS
+
+This plugin builds on L<Catalyst::Plugin::JSONRPC::Server> and calls its
+C<jsonrpc_dispatch_with> method. The consuming application B<must> load
+C<Catalyst::Plugin::JSONRPC::Server> in its plugin list, B<before>
+C<Catalyst::Plugin::MCP> (as in the SYNOPSIS). Declaring the distribution as a
+prerequisite installs it but does not load it into the application class — a
+Catalyst plugin is only mixed into C<$c> when listed in C<use Catalyst
+qw/+.../>. Omitting it yields a runtime C<< Can't locate object method
+"jsonrpc_dispatch_with" >> at the first MCP request.
+
 =head1 DESCRIPTION
 
 Adds a Model Context Protocol (revision 2025-06-18) server to a Catalyst
