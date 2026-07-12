@@ -33,7 +33,10 @@ sub mcp_dispatch ( $c, $body = undef ) {
     my $dispatcher = Catalyst::Plugin::JSONRPC::Server::Dispatcher->new;
     $dispatcher->register( $_ => $handlers->{$_} ) for keys %$handlers;
 
-    return $c->jsonrpc_dispatch_with( $dispatcher, $body );
+    # MCP's Streamable HTTP transport requires HTTP 202 Accepted (not the
+    # generic JSON-RPC 204) for a POST that carries only responses/notifications
+    # — i.e. when the dispatcher has nothing to send back.
+    return $c->jsonrpc_dispatch_with( $dispatcher, $body, 202 );
 }
 
 =head1 NAME

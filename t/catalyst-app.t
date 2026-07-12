@@ -71,10 +71,12 @@ sub call_mcp ($json) {
         'unknown resource is -32002' );
 }
 
-# notification (no id) -> HTTP 204, empty body
+# notification (no id) -> HTTP 202 Accepted, empty body.
+# MCP's Streamable HTTP transport requires 202 (not the generic JSON-RPC 204)
+# for a POST that carries only responses/notifications.
 {
     my $res = call_mcp('{"jsonrpc":"2.0","method":"notifications/initialized"}');
-    is( $res->code, 204, 'notification yields HTTP 204' );
+    is( $res->code, 202, 'notification yields HTTP 202 Accepted' );
     is( $res->content, '', 'empty body' );
 }
 
