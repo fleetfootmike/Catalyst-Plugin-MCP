@@ -2,7 +2,7 @@ package Catalyst::Plugin::MCP::Role::PromptProvider;
 use v5.36;
 use Moo::Role;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 requires qw/list get/;
 

@@ -3,7 +3,7 @@ use v5.36;
 use Catalyst::Plugin::MCP::Server;
 use Catalyst::Plugin::JSONRPC::Server::Dispatcher;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 my $PROVIDER_SLOT = 'Catalyst::Plugin::MCP/providers';
 

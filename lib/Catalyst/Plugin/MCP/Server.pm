@@ -4,7 +4,7 @@ use Moo;
 use Scalar::Util qw/blessed/;
 use namespace::clean;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 has protocol_versions => (
     is      => 'ro',

@@ -1,6 +1,9 @@
 Revision history for Catalyst-Plugin-MCP
 
-0.001     unreleased
+0.002     unreleased
+          - Version bump so consumers reliably install the current code over any
+            0.001 already present in an environment (cpanm treats same-version as
+            satisfied); no code change from the 0.001 line below.
           - Initial version: Model Context Protocol (2025-06-18) server plugin
             for Catalyst, layered on Catalyst::Plugin::JSONRPC::Server.
           - mcp_dispatch returns HTTP 202 Accepted (not 204) for a POST that
