@@ -4,6 +4,10 @@ Revision history for Catalyst-Plugin-MCP
           - Version bump so consumers reliably install the current code over any
             0.001 already present in an environment (cpanm treats same-version as
             satisfied); no code change from the 0.001 line below.
+          - Require Catalyst::Plugin::JSONRPC::Server 0.002: mcp_dispatch passes
+            the $empty_status (202) argument to jsonrpc_dispatch_with, which only
+            exists in JSONRPC::Server 0.002. Pinning prevents pairing with an
+            incompatible 0.001 (which would die "Too many arguments").
           - Initial version: Model Context Protocol (2025-06-18) server plugin
             for Catalyst, layered on Catalyst::Plugin::JSONRPC::Server.
           - mcp_dispatch returns HTTP 202 Accepted (not 204) for a POST that
