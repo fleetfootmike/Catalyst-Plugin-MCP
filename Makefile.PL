@@ -5,7 +5,7 @@ WriteMakefile(
     NAME             => 'Catalyst::Plugin::MCP',
     VERSION_FROM     => 'lib/Catalyst/Plugin/MCP.pm',
     ABSTRACT         => 'Model Context Protocol server plugin for Catalyst',
-    AUTHOR           => 'Mike Whitaker <fleetfootmike@gmail.com>',
+    AUTHOR           => 'Mike Whitaker <mike@altrion.org>',
     LICENSE          => 'perl_5',
     MIN_PERL_VERSION => '5.036',
     PREREQ_PM => {
