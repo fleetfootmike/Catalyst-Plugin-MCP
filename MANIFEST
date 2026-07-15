@@ -1,6 +1,12 @@
 .perlcriticrc
 Changes
 cpanfile
+examples/app.psgi
+examples/client.pl
+examples/lib/Example/MCP.pm
+examples/lib/Example/MCP/Controller/Root.pm
+examples/lib/Example/MCP/Providers.pm
+examples/README.md
 lib/Catalyst/Plugin/MCP.pm
 lib/Catalyst/Plugin/MCP/Role/PromptProvider.pm
 lib/Catalyst/Plugin/MCP/Role/ResourceProvider.pm

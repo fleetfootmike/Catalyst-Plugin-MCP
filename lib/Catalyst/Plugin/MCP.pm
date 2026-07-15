@@ -85,6 +85,15 @@ per-application dispatcher provided by C<Catalyst::Plugin::JSONRPC::Server>
 is never written to by this plugin, so there is no cross-request verb leakage
 and no concurrency hazard between simultaneous requests.
 
+=head1 EXAMPLES
+
+A runnable example lives in F<examples/>: a small Catalyst app loading
+C<Catalyst::Plugin::JSONRPC::Server> then C<Catalyst::Plugin::MCP>, mounting
+an C<echo> tool and a static resource at C</mcp>, plus a core-Perl client that
+replays the C<initialize> / C<tools/list> / C<tools/call> / C<resources/read>
+handshake. Start it with C<plackup examples/app.psgi> and run C<perl
+examples/client.pl>. See F<examples/README.md>.
+
 =cut
 
 1;
