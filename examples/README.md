@@ -6,6 +6,15 @@ at `/mcp`. It registers two providers: an `echo` tool that echoes back a `msg`
 argument, and a static resource (`mem://greeting`) that returns a fixed
 greeting string.
 
+## Not a production shape
+
+This example is deliberately minimal: `/mcp` is wide open, with no
+authentication and no `Origin` check, so anything that can POST to it can run
+the `echo` tool. That is fine for a localhost demo and wrong for real code.
+Before copying this layout, read the `Security` section of the top-level README:
+authentication and `Origin` validation are the application's job, and this
+example does neither.
+
 ## Run it
 
 ```

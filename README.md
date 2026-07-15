@@ -3,7 +3,7 @@
 Generic, app-agnostic Model Context Protocol (revision 2025-06-18) server plugin
 for Catalyst, layered on `Catalyst::Plugin::JSONRPC::Server`. It owns the MCP
 lifecycle, capability advertisement, and verb routing, and knows nothing about
-your domain — you supply providers.
+your domain: you supply providers.
 
 ## Synopsis
 
@@ -28,11 +28,11 @@ sub mcp :Path('/mcp') :Args(0) {
 
 Implement one of the shipped Moo::Roles per provider object:
 
-- `Catalyst::Plugin::MCP::Role::ResourceProvider` — `list($cursor)`,
+- `Catalyst::Plugin::MCP::Role::ResourceProvider`: `list($cursor)`,
   `templates`, `read($uri)`.
-- `Catalyst::Plugin::MCP::Role::PromptProvider` — `list($cursor)`,
+- `Catalyst::Plugin::MCP::Role::PromptProvider`: `list($cursor)`,
   `get($name, $args)`.
-- `Catalyst::Plugin::MCP::Role::ToolProvider` — `list($cursor)`,
+- `Catalyst::Plugin::MCP::Role::ToolProvider`: `list($cursor)`,
   `call($name, $args)`.
 
 Capabilities advertised in `initialize` are derived from which roles your
@@ -51,6 +51,27 @@ __PACKAGE__->config(
     },
 );
 ```
+
+## Security
+
+**This plugin ships no authentication and no `Origin` validation, and
+`mcp_dispatch` does not add any.** A `tools/call` runs your provider's code, so
+an endpoint mounted as in the synopsis above executes tools for anyone who can
+POST to it. Guarding it is the application's job:
+
+- **Authenticate the endpoint.** The MCP Streamable HTTP transport says servers
+  SHOULD authenticate connections. Put your own authentication (a Catalyst
+  authentication plugin, an `auto` action, or middleware) in front of
+  `mcp_dispatch`. Consider also what a provider is allowed to reach: the engine
+  does not scope tools or resources to a user.
+- **Validate the `Origin` header.** The transport says servers MUST validate
+  `Origin`, to stop a browser on another site from driving your endpoint via DNS
+  rebinding. Check it against an allow-list and reject anything else before
+  dispatching.
+
+Binding to localhost rather than `0.0.0.0` is worth it for a local server, but
+it is not a substitute for either of the above. See the `SECURITY` section in
+`Catalyst::Plugin::MCP` for detail.
 
 ## Author
 

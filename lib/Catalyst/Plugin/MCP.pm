@@ -34,8 +34,8 @@ sub mcp_dispatch ( $c, $body = undef ) {
     $dispatcher->register( $_ => $handlers->{$_} ) for keys %$handlers;
 
     # MCP's Streamable HTTP transport requires HTTP 202 Accepted (not the
-    # generic JSON-RPC 204) for a POST that carries only responses/notifications
-    # — i.e. when the dispatcher has nothing to send back.
+    # generic JSON-RPC 204) for a POST that carries only responses/notifications,
+    # i.e. when the dispatcher has nothing to send back.
     return $c->jsonrpc_dispatch_with( $dispatcher, $body, 202 );
 }
 
@@ -66,7 +66,7 @@ This plugin builds on L<Catalyst::Plugin::JSONRPC::Server> and calls its
 C<jsonrpc_dispatch_with> method. The consuming application B<must> load
 C<Catalyst::Plugin::JSONRPC::Server> in its plugin list, B<before>
 C<Catalyst::Plugin::MCP> (as in the SYNOPSIS). Declaring the distribution as a
-prerequisite installs it but does not load it into the application class — a
+prerequisite installs it but does not load it into the application class: a
 Catalyst plugin is only mixed into C<$c> when listed in C<use Catalyst
 qw/+.../>. Omitting it yields a runtime C<< Can't locate object method
 "jsonrpc_dispatch_with" >> at the first MCP request.
@@ -84,6 +84,89 @@ registered by the providers in the current request's stash. The shared
 per-application dispatcher provided by C<Catalyst::Plugin::JSONRPC::Server>
 is never written to by this plugin, so there is no cross-request verb leakage
 and no concurrency hazard between simultaneous requests.
+
+=head1 METHODS
+
+=head2 mcp_register_provider( $obj )
+
+Add a provider object to the current request's provider set. C<$obj> must be
+blessed and must consume at least one of the provider roles
+(L<Catalyst::Plugin::MCP::Role::ResourceProvider>,
+L<Catalyst::Plugin::MCP::Role::PromptProvider>,
+L<Catalyst::Plugin::MCP::Role::ToolProvider>); one provider per kind. Returns
+C<$c>, so calls chain.
+
+Providers are validated when C<mcp_dispatch> builds the engine, not here, so a
+bad provider dies at dispatch. Registration is per-request (it lives in the
+stash), so each request must register its own providers.
+
+=head2 mcp_dispatch( $body )
+
+Run the MCP request: build an engine from the registered providers and config,
+route the verb, and write the response. Call it last in the action.
+
+C<$body> is optional. Omit it and the request body is read and size-checked for
+you, which is what you want. Pass a raw (still-encoded) JSON string only if you
+have already consumed the body yourself. A supplied C<$body> bypasses
+L<Catalyst::Plugin::JSONRPC::Server>'s oversize check, which makes the size
+limit your problem.
+
+A POST carrying only notifications or responses has no reply to send, and gets
+HTTP 202 with an empty body as the Streamable HTTP transport requires.
+
+=head1 CONFIGURATION
+
+Under the C<Catalyst::Plugin::MCP> key; both are optional and are passed to
+L<Catalyst::Plugin::MCP::Server/new>:
+
+    __PACKAGE__->config(
+        'Catalyst::Plugin::MCP' => {
+            protocol_versions => ['2025-06-18'],
+            server_info       => { name => 'myapp', version => '1.0' },
+        },
+    );
+
+=over
+
+=item protocol_versions
+
+Supported MCP revisions, newest-first. The first is preferred, and is what a
+client gets when it asks for a version you do not support.
+
+=item server_info
+
+Advertised at C<initialize>. Defaults to a generic name and this plugin's
+version, so set it to your own.
+
+=back
+
+=head1 SECURITY
+
+B<This plugin ships no authentication and no C<Origin> validation, and
+C<mcp_dispatch> does not add any.> A C<tools/call> runs your provider's code,
+so an endpoint mounted as in the SYNOPSIS executes tools for anyone who can
+POST to it. Guarding it is the application's job, and both of these are on you:
+
+=over
+
+=item Authenticate the endpoint
+
+The MCP Streamable HTTP transport says servers SHOULD authenticate connections.
+Put your own authentication (a Catalyst authentication plugin, an C<auto>
+action, or middleware) in front of C<mcp_dispatch>, and let the request reach it
+only once it is authorised. Consider also what a provider is allowed to reach:
+the engine does not scope tools or resources to a user.
+
+=item Validate the C<Origin> header
+
+The transport says servers MUST validate C<Origin> on incoming connections, to
+stop a browser on another site from driving your endpoint via DNS rebinding.
+Check it against an allow-list and reject anything else before dispatching.
+
+=back
+
+Binding to localhost rather than C<0.0.0.0> is worth it for a local server, but
+it is not a substitute for either of the above.
 
 =head1 EXAMPLES
 

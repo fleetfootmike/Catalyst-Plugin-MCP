@@ -4,7 +4,7 @@ use JSON::MaybeXS qw/decode_json/;
 use Catalyst::Plugin::MCP;
 use Catalyst::Plugin::JSONRPC::Server;
 
-# Regression test: I1 — per-request dispatcher isolation
+# Regression test: I1, per-request dispatcher isolation
 #
 # Under the OLD shared-dispatcher code, mcp_dispatch called
 # $c->jsonrpc_register(...) for each request's handlers, writing them onto
@@ -89,17 +89,17 @@ is( $c1->response->status, 200, 'request 1: initialize returns 200' );
 ok( defined $r1->{result}, 'request 1: got a result' );
 
 # Request 2: SAME class (StubContext), so it shares the per-app dispatcher
-# key.  Registers tools ONLY — no ResourceProvider.
+# key.  Registers tools ONLY, no ResourceProvider.
 # Then dispatches "resources/read"; this verb was NEVER registered for this
 # request, so the response must be -32601 (method not found).
 my $c2 = StubContext->new(
     body => '{"jsonrpc":"2.0","method":"resources/read","params":{"uri":"x"},"id":9}',
 );
-$c2->mcp_register_provider( StubTools->new );    # tools only — no resources
+$c2->mcp_register_provider( StubTools->new );    # tools only, no resources
 my $r2 = $c2->mcp_dispatch;
 is( $c2->response->status, 200,
     'request 2: HTTP 200 (JSON-RPC errors still use 200)' );
 is( $r2->{error}{code}, -32601,
-    'request 2: resources/read is method-not-found — no verb leakage from request 1' );
+    'request 2: resources/read is method-not-found, no verb leakage from request 1' );
 
 done_testing;

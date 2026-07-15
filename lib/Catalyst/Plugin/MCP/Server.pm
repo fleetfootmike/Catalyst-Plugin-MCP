@@ -13,7 +13,7 @@ has protocol_versions => (
 
 has server_info => (
     is      => 'ro',
-    default => sub { { name => 'mcp-server', version => '0.001' } },
+    default => sub { { name => 'mcp-server', version => __PACKAGE__->VERSION } },
 );
 
 has _providers => ( is => 'ro', default => sub { {} } );
@@ -156,5 +156,89 @@ sub _tools_call ( $self, $params ) {
     # Execution failures are normal results carrying isError, not exceptions.
     return $self->_providers->{tools}->call( $name, $args );
 }
+
+=head1 NAME
+
+Catalyst::Plugin::MCP::Server - Model Context Protocol engine
+
+=head1 SYNOPSIS
+
+    my $engine = Catalyst::Plugin::MCP::Server->new(
+        server_info => { name => 'myapp', version => '1.0' },
+    );
+    $engine->register_provider( $tools );
+    my $handlers = $engine->handlers;    # verb name => sub ($params)
+
+=head1 DESCRIPTION
+
+The protocol engine behind L<Catalyst::Plugin::MCP>: it owns the MCP (revision
+2025-06-18) lifecycle, capability advertisement, and verb routing, and knows
+nothing about your domain: you supply providers.
+
+It also knows nothing about Catalyst or HTTP. The engine maps verb names to
+plain coderefs; binding those to a transport is the caller's job.
+L<Catalyst::Plugin::MCP> is that binding, and constructs a fresh engine per
+request so no state leaks between requests.
+
+=head1 METHODS
+
+=head2 new( %args )
+
+=over
+
+=item protocol_versions
+
+Arrayref of supported MCP revisions, newest-first; defaults to
+C<['2025-06-18']>. The first entry is the preferred version, returned when a
+client asks for one that is not supported. Dies if empty.
+
+=item server_info
+
+Hashref advertised as C<serverInfo> at C<initialize>; defaults to
+C<< { name => 'mcp-server', version => $VERSION } >>. Applications should set
+their own name and version.
+
+=back
+
+=head2 register_provider( $obj )
+
+Register a blessed object consuming one or more of the provider roles
+(L<Catalyst::Plugin::MCP::Role::ResourceProvider>,
+L<Catalyst::Plugin::MCP::Role::PromptProvider>,
+L<Catalyst::Plugin::MCP::Role::ToolProvider>). An object consuming several
+roles is registered once per kind. Returns the engine, so calls chain.
+
+Dies if C<$obj> is not blessed, consumes none of the roles, or is of a kind
+already registered: one provider per kind.
+
+=head2 capabilities
+
+Return the C<capabilities> hashref for C<initialize>: a key per registered
+provider kind. Kinds with no registered provider are not advertised, and their
+verbs are not routed.
+
+=head2 handlers
+
+Return a hashref of MCP verb name to C<< sub ($params) >>. C<initialize>,
+C<ping>, and C<notifications/initialized> are always present; the resource,
+prompt, and tool verbs appear only for registered kinds.
+
+A handler returns its result, or C<undef> for a notification (nothing to send
+back). To signal a JSON-RPC error it dies with a hashref of C<code>, C<message>,
+and optional C<data>, using C<-32602> for bad params and unknown tool or prompt
+names, C<-32002> for a resource that does not exist. Note that a tool that runs
+and B<fails> is not an error here: that is a normal result carrying
+C<< isError => 1 >>, per L<Catalyst::Plugin::MCP::Role::ToolProvider>.
+
+=head1 AUTHOR
+
+Mike Whitaker <mike@altrion.org>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify it
+under the terms of the Artistic License, as distributed with Perl.
+
+=cut
 
 1;

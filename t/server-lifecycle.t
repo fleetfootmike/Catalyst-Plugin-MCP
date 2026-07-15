@@ -49,10 +49,18 @@ is_deeply(
     {
         protocolVersion => '2025-06-18',
         capabilities    => { tools => {}, resources => {} },
-        serverInfo      => { name => 'mcp-server', version => '0.001' },
+        serverInfo      => {
+            name    => 'mcp-server',
+            version => Catalyst::Plugin::MCP::Server->VERSION,
+        },
     },
     'initialize echoes a supported protocol version'
 );
+
+# The default server_info version tracks $VERSION, so the assertion above cannot
+# catch it going undef. Advertising a null version to a client is a real failure.
+like( $h->{initialize}->( {} )->{serverInfo}{version},
+    qr/\A\d+\.\d+/, 'default serverInfo advertises a real version' );
 
 # initialize: unknown version -> preferred (first) supported
 is( $h->{initialize}->( { protocolVersion => '1999-01-01' } )->{protocolVersion},
