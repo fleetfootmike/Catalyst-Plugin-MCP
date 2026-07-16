@@ -32,6 +32,7 @@ default and run with:
 - Keep commits atomic, in imperative mood; commit tidy-ups (whitespace,
   reformatting) separately from behavioural changes.
 - Rebase onto `main` before your PR is merged, so the history stays linear.
+- CI (GitHub Actions) runs the suite and the critic test; please keep it green.
 
 ## Licence
 
