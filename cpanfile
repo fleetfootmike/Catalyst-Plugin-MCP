@@ -3,7 +3,7 @@ requires 'Moo';
 requires 'Moo::Role';
 requires 'namespace::clean';
 requires 'Scalar::Util';
-requires 'Catalyst::Plugin::JSONRPC::Server', '0.002';
+requires 'Catalyst::Plugin::JSONRPC::Server', '0.003';
 requires 'Catalyst::Runtime', '5.90000';
 
 on test => sub {
