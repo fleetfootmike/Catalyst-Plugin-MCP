@@ -32,6 +32,10 @@ WriteMakefile(
                 url  => 'https://github.com/fleetfootmike/Catalyst-Plugin-MCP.git',
                 web  => 'https://github.com/fleetfootmike/Catalyst-Plugin-MCP',
             },
+            bugtracker => {
+                web => 'https://github.com/fleetfootmike/Catalyst-Plugin-MCP/issues',
+            },
+            homepage => 'https://github.com/fleetfootmike/Catalyst-Plugin-MCP',
         },
     },
     clean => { FILES => 'Catalyst-Plugin-MCP-*' },
