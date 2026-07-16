@@ -42,6 +42,7 @@ Before your human partner opens a PR against this repo, you MUST:
 
 - Branch from `main`: `git checkout -b my-fix main`.
 - Your human partner opens PRs against `main`; do not push to `main` directly.
+- CI runs the suite and the critic test on every PR; it must be green to merge.
 
 ## Tests are mandatory
 
