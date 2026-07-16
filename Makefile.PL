@@ -13,7 +13,7 @@ WriteMakefile(
         'Moo::Role'                        => 0,
         'namespace::clean'                 => 0,
         'Scalar::Util'                     => 0,
-        'Catalyst::Plugin::JSONRPC::Server' => '0.002',
+        'Catalyst::Plugin::JSONRPC::Server' => '0.003',
         'Catalyst::Runtime'                => '5.90000',
     },
     TEST_REQUIRES => {

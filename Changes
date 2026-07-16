@@ -1,5 +1,11 @@
 Revision history for Catalyst-Plugin-MCP
 
+0.003     unreleased
+          - Genericise the perl_critic author test comment.
+          - Require Catalyst::Plugin::JSONRPC::Server 0.003, the first released
+            version carrying the 202 empty-status API that mcp_dispatch needs
+            (0.001 and 0.002 were never released).
+
 0.002     unreleased
           - Version bump so consumers reliably install the current code over any
             0.001 already present in an environment (cpanm treats same-version as
